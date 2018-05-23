@@ -14,6 +14,19 @@
     – block:
         – name: Check for missing updates.
           win_updates: 
+            category_names:
+              – Application
+              – Connectors
+              – DefinitionUpdates
+              – DeveloperKits
+              – FeaturePacks
+              – Guidance
+              – ServicePacks
+              – Tools
+              – UpdateRollups
+              – CriticalUpdates
+              – SecurityUpdates
+              - Updates
             state: searched
           register: update_count
  
@@ -33,6 +46,7 @@
               – UpdateRollups
               – CriticalUpdates
               – SecurityUpdates
+              - Updates
           register: update_result
         – name: Reboot, if needed.
           win_reboot:
