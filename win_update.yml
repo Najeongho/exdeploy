@@ -13,7 +13,8 @@
    # Check if there are missing updates
     – block:
         – name: Check for missing updates.
-          win_updates: state=searched
+          win_updates: 
+            state: searched
           register: update_count
  
     #Install missing updates only if at least one is missing
