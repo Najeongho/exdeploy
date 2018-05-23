@@ -6,7 +6,7 @@
 
 - name:  Windows Update
   hosts: all
-  gather_facts: false
+  remote_user: ansible
   tasks:
     - name: Running Windows Update
       win_updates:
