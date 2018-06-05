@@ -1,0 +1,7 @@
+- name: windows server connect test
+  hosts: windows
+  tasks:
+    - name: Run command ipconfig
+      win_command: ipconfig
+      register: reg
+    - debug: var=reg
