@@ -1,5 +1,5 @@
 - name: windows server connect test
-  hosts: windows
+  hosts: all
   tasks:
     - name: Run command ipconfig
       win_command: ipconfig
