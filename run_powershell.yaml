@@ -1,0 +1,6 @@
+- hosts: windows
+  tasks:
+     - name: Run powershell command
+       win_shell: winrm enumerate winrm/config/listener
+       register: reg
+     - debug: var=reg
