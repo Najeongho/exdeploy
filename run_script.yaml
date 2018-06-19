@@ -1,0 +1,6 @@
+- hosts: windows
+  tasks:
+  - name: execute hello powershell script
+    script: hello.ps1 universe
+    register: reg
+  - debug: var=reg.stdout_lines
