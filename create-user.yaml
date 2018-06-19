@@ -1,0 +1,7 @@
+- hosts: windows
+  tasks:
+    - name: Add User
+      win_user:
+        name: ansible
+        password: "!dlatl00"
+        state: present
