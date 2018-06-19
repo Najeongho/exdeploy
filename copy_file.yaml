@@ -1,0 +1,6 @@
+- hosts: windows
+  tasks:
+  - name: File copy to windows
+    win_copy:
+      src: /root/ansible-test/hello.ps1
+      dest: c:\hello2.ps1
