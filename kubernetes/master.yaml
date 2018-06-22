@@ -1,0 +1,52 @@
+- hosts: master
+  tasks:
+    - name: initialize the cluster
+      shell: kubeadm init --apiserver-advertise-address=192.168.56.101 --pod-network-cidr=192.168.0.0/16
+      register: result
+      until: result.stdout.find("--discovery-token") != -1
+      retries: 3
+      delay: 10
+    - debug: msg="{{ result.stdout }}"
+    - debug: msg="{{ result.stderr }}"
+ 
+ 
+    - name: create .kube directory
+      file:
+        path: $HOME/.kube
+        state: directory
+        mode: 0755
+ 
+ 
+    - name: copy admin.conf to user's kube config
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: $HOME/.kube/config
+        remote_src: yes
+        owner: root
+ 
+ 
+    - name: download calico network
+      shell: wget https://docs.projectcalico.org/v3.0/getting-started/kubernetes/installation/hosted/kubeadm/1.7/calico.yaml --no-check-certificate -P $HOME/kube-cluster
+      register: result
+      until: result.rc == 0
+      retries: 1
+      delay: 10
+    - debug: msg="{{ result.stdout }}"
+    - debug: msg="{{ result.stderr }}"
+ 
+ 
+    - name: install Pod network
+      shell: kubectl apply -f $HOME/kube-cluster/calico.yaml
+      register: result
+      until: result.stdout.find("daemonset") != -1
+      retries: 3
+      delay: 10
+    - debug: msg="{{ result.stdout }}"
+    - debug: msg="{{ result.stderr }}"
+ 
+ 
+    - name: master isolation
+      shell: kubectl taint nodes --all node-role.kubernetes.io/master-
+      register: result
+    - debug: msg="{{ result.stdout }}"
+    - debug: msg="{{ result.stderr }}"
