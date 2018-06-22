@@ -1,0 +1,9 @@
+- hosts: master
+  become: yes
+  tasks:
+    - name: run POD
+      shell: kubectl run nginx --image=nginx --port 80
+ 
+ 
+    - name: run service nodeport
+      shell: kubectl expose deploy nginx --port 80 --target-port 80 --type NodePort
