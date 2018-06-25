@@ -1,0 +1,10 @@
+- name:  all test
+  hosts: all
+  vars:
+    test: "{{ Command }}"
+  tasks:
+    - name: hostname
+      command: "{{ test }}"
+      when: test != ""
+      register: reg
+    - debug: var=reg
