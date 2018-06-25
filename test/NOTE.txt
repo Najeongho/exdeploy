@@ -1,1 +1,1 @@
-## ansible-playbook -e "Command=uname" exvar_test.yaml
+ansible-playbook -e "Command=uname" exvar_test.yaml
