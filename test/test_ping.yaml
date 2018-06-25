@@ -5,5 +5,5 @@
       ping:
   vars_prompt:
     - name: "ansible_sudo_pass"
-    prompt: "Sudo password"
-    private: yes
+      prompt: "Sudo password"
+      private: yes
