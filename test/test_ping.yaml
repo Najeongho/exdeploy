@@ -3,3 +3,7 @@
   tasks:
     - name: ping
       ping:
+  vars_prompt:
+    - name: "ansible_sudo_pass"
+    prompt: "Sudo password"
+    private: yes
