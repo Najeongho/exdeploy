@@ -1,0 +1,1071 @@
+Copy all 
+
+
+awx-db-bc87988c9-bn4bc       1/1       Terminating         0          37m
+awx-db-bc87988c9-vpcf7       0/1       ContainerCreating   0          2s
+awx-queue-657d5cdb49-98f26   1/1       Running             0          1d
+awx-task-6556b58666-f9ndb    1/1       Running             0          1d
+awx-web-7f99b46468-g4gjd     1/1       Running             0          1d
+my-nginx-9d5677d94-l6qbg     1/1       Running             0          21h
+my-nginx2-68d6774bb8-j4zfk   1/1       Running             0          20h
+my-nginx3-5467d8b774-tghpk   1/1       Running             0          20h
+awx-db-bc87988c9-bn4bc   0/1       Terminating   0         37m
+awx-db-bc87988c9-bn4bc   0/1       Terminating   0         37m
+awx-db-bc87988c9-bn4bc   0/1       Terminating   0         37m
+awx-db-bc87988c9-vpcf7   1/1       Running   0         5s
+^C%                                                                                                                                                                                                                                                                                      (⎈ |zaction-dev:awx) kg po
+NAME                         READY     STATUS    RESTARTS   AGE
+awx-cache-9b575fd6f-rttjj    1/1       Running   0          1d
+awx-db-bc87988c9-vpcf7       1/1       Running   0          10s
+awx-queue-657d5cdb49-98f26   1/1       Running   0          1d
+awx-task-6556b58666-f9ndb    1/1       Running   0          1d
+awx-web-7f99b46468-g4gjd     1/1       Running   0          1d
+my-nginx-9d5677d94-l6qbg     1/1       Running   0          21h
+my-nginx2-68d6774bb8-j4zfk   1/1       Running   0          20h
+my-nginx3-5467d8b774-tghpk   1/1       Running   0          20h
+(⎈ |zaction-dev:awx) ke awx-db-bc87988c9-vpcf7 bash
+root@awx-db-bc87988c9-vpcf7:/# df -h
+Filesystem                                     Size  Used Avail Use% Mounted on
+overlay                                         99G   13G   82G  14% /
+tmpfs                                          7.9G     0  7.9G   0% /dev
+tmpfs                                          7.9G     0  7.9G   0% /sys/fs/cgroup
+/dev/mapper/docker_data                         99G   13G   82G  14% /etc/hosts
+shm                                             64M  4.0K   64M   1% /dev/shm
+/dev/mapper/3600a09803830446d463f4c4548564f4d   20G  124M   19G   1% /var/lib/postgresql/data
+tmpfs                                          7.9G   12K  7.9G   1% /run/secrets/kubernetes.io/serviceaccount
+tmpfs                                          7.9G     0  7.9G   0% /sys/firmware
+root@awx-db-bc87988c9-vpcf7:/# exit
+exit
+(⎈ |zaction-dev:awx) kg deploy awx-db -o yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "8"
+  creationTimestamp: 2018-06-25T01:02:58Z
+  generation: 9
+  labels:
+    app: awx
+    chart: awx-0.0.3
+    heritage: Tiller
+    release: awx
+    role: database
+  name: awx-db
+  namespace: awx
+  resourceVersion: "2759023"
+  selfLink: /apis/extensions/v1beta1/namespaces/awx/deployments/awx-db
+  uid: 8007ae1d-7813-11e8-aae1-c64f1770d155
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: awx
+      release: awx
+  strategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: awx
+        release: awx
+        role: database
+apiVersion: extensions/v1beta1
+    spec:
+      containers:
+      - env:
+        - name: POSTGRES_USER
+          value: awx
+        - name: POSTGRES_PASSWORD
+          value: awxpass
+        - name: POSTGRES_DB
+          value: awx
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        image: postgres:9.6.3
+        imagePullPolicy: IfNotPresent
+        name: db
+        ports:
+        - containerPort: 5432
+          name: db
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: data
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: awx-db-sizeup80
+status:
+  availableReplicas: 1
+  conditions:
+  - lastTransitionTime: 2018-06-25T11:22:28Z
+    lastUpdateTime: 2018-06-25T11:22:28Z
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  - lastTransitionTime: 2018-06-25T01:02:58Z
+    lastUpdateTime: 2018-06-26T01:16:25Z
+    message: ReplicaSet "awx-db-bc87988c9" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  observedGeneration: 9
+  readyReplicas: 1
+  replicas: 1
+  updatedReplicas: 1
+(⎈ |zaction-dev:awx) kg deploy
+NAME        DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+awx-cache   1         1         1            1           1d
+awx-db      1         1         1            1           1d
+awx-queue   1         1         1            1           1d
+awx-task    1         1         1            1           1d
+awx-web     1         1         1            1           1d
+my-nginx    1         1         1            1           21h
+my-nginx2   1         1         1            1           20h
+my-nginx3   1         1         1            1           20h
+(⎈ |zaction-dev:awx) kd deploy awx-db
+deployment.extensions "awx-db" deleted
+(⎈ |zaction-dev:awx) ls
+set-pv.yaml  set-pvc.yaml
+(⎈ |zaction-dev:awx) kg deploy
+NAME        DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+awx-cache   1         1         1            1           1d
+awx-queue   1         1         1            1           1d
+awx-task    1         1         1            1           1d
+awx-web     1         1         1            1           1d
+my-nginx    1         1         1            1           21h
+my-nginx2   1         1         1            1           20h
+my-nginx3   1         1         1            1           20h
+(⎈ |zaction-dev:awx) vi set-db.yaml
+(⎈ |zaction-dev:awx) kcf set-db.yaml
+deployment.extensions "awx-db" created
+(⎈ |zaction-dev:awx) kg deploy -w
+NAME        DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+awx-cache   1         1         1            1           1d
+awx-db      1         1         1            0           5s
+awx-queue   1         1         1            1           1d
+awx-task    1         1         1            1           1d
+awx-web     1         1         1            1           1d
+my-nginx    1         1         1            1           21h
+my-nginx2   1         1         1            1           20h
+my-nginx3   1         1         1            1           20h
+^C%                                                                                                                                                                                                                                                                                      (⎈ |zaction-dev:awx) kg po -w
+NAME                         READY     STATUS              RESTARTS   AGE
+awx-cache-9b575fd6f-rttjj    1/1       Running             0          1d
+awx-db-bc87988c9-6sdwl       0/1       ContainerCreating   0          10s
+awx-queue-657d5cdb49-98f26   1/1       Running             0          1d
+awx-task-6556b58666-f9ndb    1/1       Running             0          1d
+awx-web-7f99b46468-g4gjd     1/1       Running             0          1d
+my-nginx-9d5677d94-l6qbg     1/1       Running             0          21h
+my-nginx2-68d6774bb8-j4zfk   1/1       Running             0          20h
+my-nginx3-5467d8b774-tghpk   1/1       Running             0          20h
+^C%                                                                                                                                                                                                                                                                                      (⎈ |zaction-dev:awx) kg pv
+NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS    CLAIM                                          STORAGECLASS               REASON    AGE
+awx-db-sizeup                              50Gi       RWO            Delete           Bound     awx/awx-db-sizeup                              ibmc-block-bronze                    14h
+awx-db-sizeup80                            80Gi       RWO            Delete           Bound     awx/awx-db-sizeup80                            ibmc-block-bronze                    50m
+pvc-0a9b44e6-5ca2-11e8-ada0-22b8bd203138   20Gi       RWX            Delete           Bound     serverless-console/pgdata-pgbackend-0          ibmc-file-bronze                     35d
+pvc-21c30123-5fe6-11e8-ada0-22b8bd203138   20Gi       RWO            Delete           Bound     fission-merge/fission-storage-pvc              ibmc-file-bronze                     31d
+pvc-2b26cd8f-5ca2-11e8-ada0-22b8bd203138   20Gi       RWX            Delete           Bound     auth/pgdata-pgauth-0                           ibmc-file-bronze                     35d
+pvc-2e0caacd-5c9f-11e8-ada0-22b8bd203138   20Gi       RWX            Delete           Bound     fission/fission-storage-pvc                    ibmc-file-bronze                     35d
+pvc-94c92ae7-6a0c-11e8-ada0-22b8bd203138   20Gi       RWO            Delete           Bound     serverless-logging/storage-es-data-0                                                18d
+pvc-ab710937-7378-11e8-ada0-22b8bd203138   20Gi       RWO            Retain           Bound     serverless-console/pgdata-pgauth-0             ibmc-block-retain-bronze             6d
+pvc-bed78cc5-72d8-11e8-ada0-22b8bd203138   20Gi       RWO            Retain           Bound     dispatch/postgresql-storage-pvc                                                     7d
+pvc-e090d775-6ad2-11e8-ada0-22b8bd203138   20Gi       RWO            Delete           Bound     dispatch-fission-test/postgresql-storage-pvc                                        17d
+pvc-fe4bf2bd-6a0c-11e8-ada0-22b8bd203138   20Gi       RWO            Delete           Bound     serverless-logging/storage-es-data-1                                                18d
+(⎈ |zaction-dev:awx) kg pvc
+NAME              STATUS    VOLUME            CAPACITY   ACCESS MODES   STORAGECLASS        AGE
+awx-db-sizeup     Bound     awx-db-sizeup     50Gi       RWO            ibmc-block-bronze   14h
+awx-db-sizeup80   Bound     awx-db-sizeup80   80Gi       RWO            ibmc-block-bronze   48m
+(⎈ |zaction-dev:awx) kg po -w
+NAME                         READY     STATUS              RESTARTS   AGE
+awx-cache-9b575fd6f-rttjj    1/1       Running             0          1d
+awx-db-bc87988c9-6sdwl       0/1       ContainerCreating   0          21s
+awx-queue-657d5cdb49-98f26   1/1       Running             0          1d
+awx-task-6556b58666-f9ndb    1/1       Running             0          1d
+awx-web-7f99b46468-g4gjd     1/1       Running             0          1d
+my-nginx-9d5677d94-l6qbg     1/1       Running             0          21h
+my-nginx2-68d6774bb8-j4zfk   1/1       Running             0          20h
+my-nginx3-5467d8b774-tghpk   1/1       Running             0          20h
+awx-db-bc87988c9-6sdwl   1/1       Running   0         28s
+^C%                                                                                                                                                                                                                                                                                      (⎈ |zaction-dev:awx) kg po
+NAME                         READY     STATUS    RESTARTS   AGE
+awx-cache-9b575fd6f-rttjj    1/1       Running   0          1d
+awx-db-bc87988c9-6sdwl       1/1       Running   0          32s
+awx-queue-657d5cdb49-98f26   1/1       Running   0          1d
+awx-task-6556b58666-f9ndb    1/1       Running   0          1d
+awx-web-7f99b46468-g4gjd     1/1       Running   0          1d
+my-nginx-9d5677d94-l6qbg     1/1       Running   0          21h
+my-nginx2-68d6774bb8-j4zfk   1/1       Running   0          20h
+my-nginx3-5467d8b774-tghpk   1/1       Running   0          20h
+(⎈ |zaction-dev:awx) ke awx-db-bc87988c9-6sdwl bash
+root@awx-db-bc87988c9-6sdwl:/# df -h
+Filesystem                                     Size  Used Avail Use% Mounted on
+overlay                                         99G   13G   82G  14% /
+tmpfs                                          7.9G     0  7.9G   0% /dev
+tmpfs                                          7.9G     0  7.9G   0% /sys/fs/cgroup
+/dev/mapper/docker_data                         99G   13G   82G  14% /etc/hosts
+shm                                             64M  4.0K   64M   1% /dev/shm
+/dev/mapper/3600a09803830446d463f4c4548564f4d   20G  124M   19G   1% /var/lib/postgresql/data
+tmpfs                                          7.9G   12K  7.9G   1% /run/secrets/kubernetes.io/serviceaccount
+tmpfs                                          7.9G     0  7.9G   0% /sys/firmware
+root@awx-db-bc87988c9-6sdwl:/# umount /var/lib/postgresql/data
+umount: /var/lib/postgresql/data: must be superuser to unmount
+root@awx-db-bc87988c9-6sdwl:/# umount dev/mapper/3600a09803830446d463f4c4548564f4d
+umount: dev/mapper/3600a09803830446d463f4c4548564f4d: must be superuser to unmount
+root@awx-db-bc87988c9-6sdwl:/# umount /dev/mapper/3600a09803830446d463f4c4548564f4d
+umount: /var/lib/postgresql/data: must be superuser to unmount
+root@awx-db-bc87988c9-6sdwl:/# exit
+exit
+command terminated with exit code 32
+(⎈ |zaction-dev:awx) kg deploy awx-db -o yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+  creationTimestamp: 2018-06-26T01:51:45Z
+  generation: 1
+  labels:
+    app: awx
+    chart: awx-0.0.3
+    heritage: Tiller
+    release: awx
+    role: database
+  name: awx-db
+  namespace: awx
+  resourceVersion: "2759398"
+  selfLink: /apis/extensions/v1beta1/namespaces/awx/deployments/awx-db
+  uid: 7b13be84-78e3-11e8-aae1-c64f1770d155
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: awx
+      release: awx
+  strategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: awx
+        release: awx
+        role: database
+    spec:
+      containers:
+      - env:
+        - name: POSTGRES_USER
+          value: awx
+        - name: POSTGRES_PASSWORD
+          value: awxpass
+        - name: POSTGRES_DB
+          value: awx
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        image: postgres:9.6.3
+        imagePullPolicy: IfNotPresent
+        name: db
+        ports:
+        - containerPort: 5432
+          name: db
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: data
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: awx-db-sizeup80
+status:
+  availableReplicas: 1
+  conditions:
+  - lastTransitionTime: 2018-06-26T01:51:45Z
+    lastUpdateTime: 2018-06-26T01:51:45Z
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  - lastTransitionTime: 2018-06-26T01:51:45Z
+    lastUpdateTime: 2018-06-26T01:52:13Z
+    message: ReplicaSet "awx-db-bc87988c9" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  observedGeneration: 1
+  readyReplicas: 1
+  replicas: 1
+  updatedReplicas: 1
+(⎈ |zaction-dev:awx) kg deploy
+NAME        DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+awx-cache   1         1         1            1           1d
+awx-db      1         1         1            1           3m
+awx-queue   1         1         1            1           1d
+awx-task    1         1         1            1           1d
+awx-web     1         1         1            1           1d
+my-nginx    1         1         1            1           21h
+my-nginx2   1         1         1            1           20h
+my-nginx3   1         1         1            1           20h
+(⎈ |zaction-dev:awx) k edit deploy awx-db
+error: there was a problem with the editor "vi"
+(⎈ |zaction-dev:awx) kg po
+NAME                         READY     STATUS    RESTARTS   AGE
+awx-cache-9b575fd6f-rttjj    1/1       Running   0          1d
+awx-db-bc87988c9-6sdwl       1/1       Running   0          5m
+awx-queue-657d5cdb49-98f26   1/1       Running   0          1d
+awx-task-6556b58666-f9ndb    1/1       Running   0          1d
+awx-web-7f99b46468-g4gjd     1/1       Running   0          1d
+my-nginx-9d5677d94-l6qbg     1/1       Running   0          21h
+my-nginx2-68d6774bb8-j4zfk   1/1       Running   0          20h
+my-nginx3-5467d8b774-tghpk   1/1       Running   0          20h
+(⎈ |zaction-dev:awx) ke awx-db-bc87988c9-6sdwl bash
+root@awx-db-bc87988c9-6sdwl:/# df -h
+Filesystem                                     Size  Used Avail Use% Mounted on
+overlay                                         99G   13G   82G  14% /
+tmpfs                                          7.9G     0  7.9G   0% /dev
+# Please edit the object below. Lines beginning with a '#' will be ignored,
+tmpfs                                          7.9G     0  7.9G   0% /sys/fs/cgroup
+/dev/mapper/docker_data                         99G   13G   82G  14% /etc/hosts
+shm                                             64M  4.0K   64M   1% /dev/shm
+/dev/mapper/3600a09803830446d463f4c4548564f4d   20G  124M   19G   1% /var/lib/postgresql/data
+tmpfs                                          7.9G   12K  7.9G   1% /run/secrets/kubernetes.io/serviceaccount
+tmpfs                                          7.9G     0  7.9G   0% /sys/firmware
+root@awx-db-bc87988c9-6sdwl:/# cd /var/lib/postgresql/data
+root@awx-db-bc87988c9-6sdwl:/var/lib/postgresql/data# ls
+lost+found  pgdata  sizeup  test
+root@awx-db-bc87988c9-6sdwl:/var/lib/postgresql/data# fallocate - 20G test.img
+fallocate: unexpected number of arguments
+root@awx-db-bc87988c9-6sdwl:/var/lib/postgresql/data# fallocate -l 20G test.img
+fallocate: fallocate failed: No space left on device
+root@awx-db-bc87988c9-6sdwl:/var/lib/postgresql/data# df -h
+Filesystem                                     Size  Used Avail Use% Mounted on
+overlay                                         99G   13G   82G  14% /
+tmpfs                                          7.9G     0  7.9G   0% /dev
+tmpfs                                          7.9G     0  7.9G   0% /sys/fs/cgroup
+/dev/mapper/docker_data                         99G   13G   82G  14% /etc/hosts
+shm                                             64M  4.0K   64M   1% /dev/shm
+/dev/mapper/3600a09803830446d463f4c4548564f4d   20G   20G     0 100% /var/lib/postgresql/data
+tmpfs                                          7.9G   12K  7.9G   1% /run/secrets/kubernetes.io/serviceaccount
+tmpfs                                          7.9G     0  7.9G   0% /sys/firmware
+root@awx-db-bc87988c9-6sdwl:/var/lib/postgresql/data# df
+Filesystem                                    1K-blocks     Used Available Use% Mounted on
+overlay                                       103079200 12881060  84938980  14% /
+tmpfs                                           8213980        0   8213980   0% /dev
+tmpfs                                           8213980        0   8213980   0% /sys/fs/cgroup
+/dev/mapper/docker_data                       103079200 12881060  84938980  14% /etc/hosts
+shm                                               65536        4     65532   1% /dev/shm
+/dev/mapper/3600a09803830446d463f4c4548564f4d  20511356 20494972         0 100% /var/lib/postgresql/data
+tmpfs                                           8213980       12   8213968   1% /run/secrets/kubernetes.io/serviceaccount
+tmpfs                                           8213980        0   8213980   0% /sys/firmware
+root@awx-db-bc87988c9-6sdwl:/var/lib/postgresql/data# touch test2
+root@awx-db-bc87988c9-6sdwl:/var/lib/postgresql/data# echo "test2" >> test2
+bash: echo: write error: No space left on device
+root@awx-db-bc87988c9-6sdwl:/var/lib/postgresql/data# ls
+lost+found  pgdata  sizeup  test  test2  test.img
+root@awx-db-bc87988c9-6sdwl:/var/lib/postgresql/data# df -h
+Filesystem                                     Size  Used Avail Use% Mounted on
+overlay                                         99G   13G   82G  14% /
+tmpfs                                          7.9G     0  7.9G   0% /dev
+tmpfs                                          7.9G     0  7.9G   0% /sys/fs/cgroup
+/dev/mapper/docker_data                         99G   13G   82G  14% /etc/hosts
+shm                                             64M  4.0K   64M   1% /dev/shm
+/dev/mapper/3600a09803830446d463f4c4548564f4d   20G   20G     0 100% /var/lib/postgresql/data
+tmpfs                                          7.9G   12K  7.9G   1% /run/secrets/kubernetes.io/serviceaccount
+tmpfs                                          7.9G     0  7.9G   0% /sys/firmware
+root@awx-db-bc87988c9-6sdwl:/var/lib/postgresql/data# ls
+lost+found  pgdata  sizeup  test  test2  test.img
+root@awx-db-bc87988c9-6sdwl:/var/lib/postgresql/data# exit
+exit
+(⎈ |zaction-dev:awx) kg pv
+NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS    CLAIM                                          STORAGECLASS               REASON    AGE
+awx-db-sizeup                              50Gi       RWO            Delete           Bound     awx/awx-db-sizeup                              ibmc-block-bronze                    14h
+awx-db-sizeup80                            80Gi       RWO            Delete           Bound     awx/awx-db-sizeup80                            ibmc-block-bronze                    1h
+pvc-0a9b44e6-5ca2-11e8-ada0-22b8bd203138   20Gi       RWX            Delete           Bound     serverless-console/pgdata-pgbackend-0          ibmc-file-bronze                     35d
+pvc-21c30123-5fe6-11e8-ada0-22b8bd203138   20Gi       RWO            Delete           Bound     fission-merge/fission-storage-pvc              ibmc-file-bronze                     31d
+pvc-2b26cd8f-5ca2-11e8-ada0-22b8bd203138   20Gi       RWX            Delete           Bound     auth/pgdata-pgauth-0                           ibmc-file-bronze                     35d
+pvc-2e0caacd-5c9f-11e8-ada0-22b8bd203138   20Gi       RWX            Delete           Bound     fission/fission-storage-pvc                    ibmc-file-bronze                     35d
+pvc-94c92ae7-6a0c-11e8-ada0-22b8bd203138   20Gi       RWO            Delete           Bound     serverless-logging/storage-es-data-0                                                18d
+pvc-ab710937-7378-11e8-ada0-22b8bd203138   20Gi       RWO            Retain           Bound     serverless-console/pgdata-pgauth-0             ibmc-block-retain-bronze             6d
+pvc-bed78cc5-72d8-11e8-ada0-22b8bd203138   20Gi       RWO            Retain           Bound     dispatch/postgresql-storage-pvc                                                     7d
+pvc-e090d775-6ad2-11e8-ada0-22b8bd203138   20Gi       RWO            Delete           Bound     dispatch-fission-test/postgresql-storage-pvc                                        17d
+pvc-fe4bf2bd-6a0c-11e8-ada0-22b8bd203138   20Gi       RWO            Delete           Bound     serverless-logging/storage-es-data-1                                                18d
+(⎈ |zaction-dev:awx) kg deploy
+NAME        DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+awx-cache   1         1         1            0           1d
+awx-db      1         1         1            0           17m
+awx-queue   1         1         1            0           1d
+awx-task    1         1         1            0           1d
+awx-web     1         1         1            0           1d
+my-nginx    1         1         1            0           21h
+my-nginx2   1         1         1            0           20h
+my-nginx3   1         1         1            0           20h
+(⎈ |zaction-dev:awx) k edit deploy awx-db
+deployment.extensions "awx-db" edited
+(⎈ |zaction-dev:awx) kg po
+NAME                         READY     STATUS              RESTARTS   AGE
+awx-cache-9b575fd6f-rttjj    1/1       Running             0          1d
+awx-db-bc87988c9-6sdwl       1/1       Running             0          18m
+awx-db-bc87988c9-x4h8n       0/1       ContainerCreating   0          4s
+awx-queue-657d5cdb49-98f26   1/1       Running             0          1d
+awx-task-6556b58666-f9ndb    1/1       Running             0          1d
+awx-web-7f99b46468-g4gjd     1/1       Running             0          1d
+my-nginx-9d5677d94-l6qbg     1/1       Running             0          21h
+my-nginx2-68d6774bb8-j4zfk   1/1       Running             0          20h
+my-nginx3-5467d8b774-tghpk   1/1       Running             0          20h
+(⎈ |zaction-dev:awx) kg deploy
+NAME        DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+awx-cache   1         1         1            0           1d
+awx-db      2         2         2            0           18m
+awx-queue   1         1         1            0           1d
+awx-task    1         1         1            0           1d
+awx-web     1         1         1            0           1d
+my-nginx    1         1         1            0           21h
+my-nginx2   1         1         1            0           20h
+my-nginx3   1         1         1            0           20h
+(⎈ |zaction-dev:awx) kg po
+NAME                         READY     STATUS              RESTARTS   AGE
+awx-cache-9b575fd6f-rttjj    1/1       Running             0          1d
+awx-db-bc87988c9-6sdwl       1/1       Running             0          18m
+awx-db-bc87988c9-x4h8n       0/1       ContainerCreating   0          11s
+awx-queue-657d5cdb49-98f26   1/1       Running             0          1d
+awx-task-6556b58666-f9ndb    1/1       Running             0          1d
+awx-web-7f99b46468-g4gjd     1/1       Running             0          1d
+my-nginx-9d5677d94-l6qbg     1/1       Running             0          21h
+my-nginx2-68d6774bb8-j4zfk   1/1       Running             0          20h
+my-nginx3-5467d8b774-tghpk   1/1       Running             0          20h
+(⎈ |zaction-dev:awx) kg pv
+NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS    CLAIM                                          STORAGECLASS               REASON    AGE
+awx-db-sizeup                              50Gi       RWO            Delete           Bound     awx/awx-db-sizeup                              ibmc-block-bronze                    15h
+awx-db-sizeup80                            80Gi       RWO            Delete           Bound     awx/awx-db-sizeup80                            ibmc-block-bronze                    1h
+pvc-0a9b44e6-5ca2-11e8-ada0-22b8bd203138   20Gi       RWX            Delete           Bound     serverless-console/pgdata-pgbackend-0          ibmc-file-bronze                     35d
+pvc-21c30123-5fe6-11e8-ada0-22b8bd203138   20Gi       RWO            Delete           Bound     fission-merge/fission-storage-pvc              ibmc-file-bronze                     31d
+pvc-2b26cd8f-5ca2-11e8-ada0-22b8bd203138   20Gi       RWX            Delete           Bound     auth/pgdata-pgauth-0                           ibmc-file-bronze                     35d
+pvc-2e0caacd-5c9f-11e8-ada0-22b8bd203138   20Gi       RWX            Delete           Bound     fission/fission-storage-pvc                    ibmc-file-bronze                     35d
+pvc-94c92ae7-6a0c-11e8-ada0-22b8bd203138   20Gi       RWO            Delete           Bound     serverless-logging/storage-es-data-0                                                18d
+pvc-ab710937-7378-11e8-ada0-22b8bd203138   20Gi       RWO            Retain           Bound     serverless-console/pgdata-pgauth-0             ibmc-block-retain-bronze             6d
+pvc-bed78cc5-72d8-11e8-ada0-22b8bd203138   20Gi       RWO            Retain           Bound     dispatch/postgresql-storage-pvc                                                     7d
+pvc-e090d775-6ad2-11e8-ada0-22b8bd203138   20Gi       RWO            Delete           Bound     dispatch-fission-test/postgresql-storage-pvc                                        17d
+pvc-fe4bf2bd-6a0c-11e8-ada0-22b8bd203138   20Gi       RWO            Delete           Bound     serverless-logging/storage-es-data-1                                                18d
+(⎈ |zaction-dev:awx) kg pvc
+NAME              STATUS    VOLUME            CAPACITY   ACCESS MODES   STORAGECLASS        AGE
+awx-db-sizeup     Bound     awx-db-sizeup     50Gi       RWO            ibmc-block-bronze   14h
+awx-db-sizeup80   Bound     awx-db-sizeup80   80Gi       RWO            ibmc-block-bronze   1h
+(⎈ |zaction-dev:awx) kg po
+NAME                         READY     STATUS              RESTARTS   AGE
+awx-cache-9b575fd6f-rttjj    1/1       Running             0          1d
+awx-db-bc87988c9-6sdwl       1/1       Running             0          19m
+awx-db-bc87988c9-x4h8n       0/1       ContainerCreating   0          22s
+awx-queue-657d5cdb49-98f26   1/1       Running             0          1d
+awx-task-6556b58666-f9ndb    1/1       Running             0          1d
+awx-web-7f99b46468-g4gjd     1/1       Running             0          1d
+my-nginx-9d5677d94-l6qbg     1/1       Running             0          21h
+my-nginx2-68d6774bb8-j4zfk   1/1       Running             0          20h
+my-nginx3-5467d8b774-tghpk   1/1       Running             0          20h
+(⎈ |zaction-dev:awx) kdb po awx-db-bc87988c9-x4h8n
+Name:           awx-db-bc87988c9-x4h8n
+Namespace:      awx
+Node:           10.178.188.52/10.178.188.52
+Start Time:     Tue, 26 Jun 2018 11:10:31 +0900
+Labels:         app=awx
+                pod-template-hash=674354475
+                release=awx
+                role=database
+Annotations:    kubernetes.io/psp=ibm-privileged-psp
+Status:         Pending
+IP:
+Controlled By:  ReplicaSet/awx-db-bc87988c9
+Containers:
+  db:
+    Container ID:
+    Image:          postgres:9.6.3
+    Image ID:
+    Port:           5432/TCP
+    Host Port:      0/TCP
+    State:          Waiting
+      Reason:       ContainerCreating
+    Ready:          False
+    Restart Count:  0
+    Environment:
+      POSTGRES_USER:      awx
+      POSTGRES_PASSWORD:  awxpass
+      POSTGRES_DB:        awx
+      PGDATA:             /var/lib/postgresql/data/pgdata
+    Mounts:
+      /var/lib/postgresql/data from data (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from default-token-dblxz (ro)
+Conditions:
+  Type           Status
+  Initialized    True
+  Ready          False
+  PodScheduled   True
+Volumes:
+  data:
+    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:  awx-db-sizeup80
+    ReadOnly:   false
+  default-token-dblxz:
+    Type:        Secret (a volume populated by a Secret)
+    SecretName:  default-token-dblxz
+    Optional:    false
+QoS Class:       BestEffort
+Node-Selectors:  <none>
+Tolerations:     node.kubernetes.io/not-ready:NoExecute for 300s
+                 node.kubernetes.io/unreachable:NoExecute for 300s
+Events:
+  Type    Reason                 Age   From                    Message
+  ----    ------                 ----  ----                    -------
+  Normal  Scheduled              29s   default-scheduler       Successfully assigned awx-db-bc87988c9-x4h8n to 10.178.188.52
+  Normal  SuccessfulMountVolume  29s   kubelet, 10.178.188.52  MountVolume.SetUp succeeded for volume "default-token-dblxz"
+(⎈ |zaction-dev:awx) kg po
+NAME                         READY     STATUS              RESTARTS   AGE
+awx-cache-9b575fd6f-rttjj    1/1       Running             0          1d
+awx-db-bc87988c9-6sdwl       1/1       Running             0          19m
+awx-db-bc87988c9-x4h8n       0/1       ContainerCreating   0          32s
+awx-queue-657d5cdb49-98f26   1/1       Running             0          1d
+awx-task-6556b58666-f9ndb    1/1       Running             0          1d
+awx-web-7f99b46468-g4gjd     1/1       Running             0          1d
+my-nginx-9d5677d94-l6qbg     1/1       Running             0          21h
+my-nginx2-68d6774bb8-j4zfk   1/1       Running             0          20h
+my-nginx3-5467d8b774-tghpk   1/1       Running             0          20h
+(⎈ |zaction-dev:awx) kg po -w
+NAME                         READY     STATUS              RESTARTS   AGE
+awx-cache-9b575fd6f-rttjj    1/1       Running             0          1d
+awx-db-bc87988c9-6sdwl       1/1       Running             0          19m
+awx-db-bc87988c9-x4h8n       0/1       ContainerCreating   0          38s
+awx-queue-657d5cdb49-98f26   1/1       Running             0          1d
+awx-task-6556b58666-f9ndb    1/1       Running             0          1d
+awx-web-7f99b46468-g4gjd     1/1       Running             0          1d
+my-nginx-9d5677d94-l6qbg     1/1       Running             0          21h
+my-nginx2-68d6774bb8-j4zfk   1/1       Running             0          20h
+my-nginx3-5467d8b774-tghpk   1/1       Running             0          20h
+^C%                                                                                                                                                                                                                                                                                      (⎈ |zaction-dev:awx) kg po
+NAME                         READY     STATUS              RESTARTS   AGE
+awx-cache-9b575fd6f-rttjj    1/1       Running             0          1d
+awx-db-bc87988c9-6sdwl       1/1       Running             0          19m
+awx-db-bc87988c9-x4h8n       0/1       ContainerCreating   0          1m
+awx-queue-657d5cdb49-98f26   1/1       Running             0          1d
+awx-task-6556b58666-f9ndb    1/1       Running             0          1d
+awx-web-7f99b46468-g4gjd     1/1       Running             0          1d
+my-nginx-9d5677d94-l6qbg     1/1       Running             0          21h
+my-nginx2-68d6774bb8-j4zfk   1/1       Running             0          20h
+my-nginx3-5467d8b774-tghpk   1/1       Running             0          20h
+(⎈ |zaction-dev:awx) kdb po awx-db-bc87988c9-x4h8n
+Name:           awx-db-bc87988c9-x4h8n
+Namespace:      awx
+Node:           10.178.188.52/10.178.188.52
+Start Time:     Tue, 26 Jun 2018 11:10:31 +0900
+Labels:         app=awx
+                pod-template-hash=674354475
+                release=awx
+                role=database
+Annotations:    kubernetes.io/psp=ibm-privileged-psp
+Status:         Pending
+IP:
+Controlled By:  ReplicaSet/awx-db-bc87988c9
+Containers:
+  db:
+    Container ID:
+    Image:          postgres:9.6.3
+    Image ID:
+    Port:           5432/TCP
+    Host Port:      0/TCP
+    State:          Waiting
+      Reason:       ContainerCreating
+    Ready:          False
+    Restart Count:  0
+    Environment:
+      POSTGRES_USER:      awx
+      POSTGRES_PASSWORD:  awxpass
+      POSTGRES_DB:        awx
+      PGDATA:             /var/lib/postgresql/data/pgdata
+    Mounts:
+      /var/lib/postgresql/data from data (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from default-token-dblxz (ro)
+Conditions:
+  Type           Status
+  Initialized    True
+  Ready          False
+  PodScheduled   True
+Volumes:
+  data:
+    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:  awx-db-sizeup80
+    ReadOnly:   false
+  default-token-dblxz:
+    Type:        Secret (a volume populated by a Secret)
+    SecretName:  default-token-dblxz
+    Optional:    false
+QoS Class:       BestEffort
+Node-Selectors:  <none>
+Tolerations:     node.kubernetes.io/not-ready:NoExecute for 300s
+                 node.kubernetes.io/unreachable:NoExecute for 300s
+Events:
+  Type    Reason                 Age   From                    Message
+  ----    ------                 ----  ----                    -------
+  Normal  Scheduled              1m    default-scheduler       Successfully assigned awx-db-bc87988c9-x4h8n to 10.178.188.52
+  Normal  SuccessfulMountVolume  1m    kubelet, 10.178.188.52  MountVolume.SetUp succeeded for volume "default-token-dblxz"
+(⎈ |zaction-dev:awx) kg po
+NAME                         READY     STATUS              RESTARTS   AGE
+awx-cache-9b575fd6f-rttjj    1/1       Running             0          1d
+awx-db-bc87988c9-6sdwl       1/1       Running             0          20m
+awx-db-bc87988c9-x4h8n       0/1       ContainerCreating   0          1m
+awx-queue-657d5cdb49-98f26   1/1       Running             0          1d
+awx-task-6556b58666-f9ndb    1/1       Running             0          1d
+awx-web-7f99b46468-g4gjd     1/1       Running             0          1d
+my-nginx-9d5677d94-l6qbg     1/1       Running             0          21h
+my-nginx2-68d6774bb8-j4zfk   1/1       Running             0          20h
+my-nginx3-5467d8b774-tghpk   1/1       Running             0          20h
+(⎈ |zaction-dev:awx) kg pvc
+NAME              STATUS    VOLUME            CAPACITY   ACCESS MODES   STORAGECLASS        AGE
+awx-db-sizeup     Bound     awx-db-sizeup     50Gi       RWO            ibmc-block-bronze   14h
+awx-db-sizeup80   Bound     awx-db-sizeup80   80Gi       RWO            ibmc-block-bronze   1h
+(⎈ |zaction-dev:awx) kg pv
+NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS    CLAIM                                          STORAGECLASS               REASON    AGE
+awx-db-sizeup                              50Gi       RWO            Delete           Bound     awx/awx-db-sizeup                              ibmc-block-bronze                    15h
+awx-db-sizeup80                            80Gi       RWO            Delete           Bound     awx/awx-db-sizeup80                            ibmc-block-bronze                    1h
+pvc-0a9b44e6-5ca2-11e8-ada0-22b8bd203138   20Gi       RWX            Delete           Bound     serverless-console/pgdata-pgbackend-0          ibmc-file-bronze                     35d
+pvc-21c30123-5fe6-11e8-ada0-22b8bd203138   20Gi       RWO            Delete           Bound     fission-merge/fission-storage-pvc              ibmc-file-bronze                     31d
+pvc-2b26cd8f-5ca2-11e8-ada0-22b8bd203138   20Gi       RWX            Delete           Bound     auth/pgdata-pgauth-0                           ibmc-file-bronze                     35d
+pvc-2e0caacd-5c9f-11e8-ada0-22b8bd203138   20Gi       RWX            Delete           Bound     fission/fission-storage-pvc                    ibmc-file-bronze                     35d
+pvc-94c92ae7-6a0c-11e8-ada0-22b8bd203138   20Gi       RWO            Delete           Bound     serverless-logging/storage-es-data-0                                                18d
+pvc-ab710937-7378-11e8-ada0-22b8bd203138   20Gi       RWO            Retain           Bound     serverless-console/pgdata-pgauth-0             ibmc-block-retain-bronze             6d
+pvc-bed78cc5-72d8-11e8-ada0-22b8bd203138   20Gi       RWO            Retain           Bound     dispatch/postgresql-storage-pvc                                                     7d
+pvc-e090d775-6ad2-11e8-ada0-22b8bd203138   20Gi       RWO            Delete           Bound     dispatch-fission-test/postgresql-storage-pvc                                        17d
+pvc-fe4bf2bd-6a0c-11e8-ada0-22b8bd203138   20Gi       RWO            Delete           Bound     serverless-logging/storage-es-data-1                                                18d
+(⎈ |zaction-dev:awx) kg po
+NAME                         READY     STATUS              RESTARTS   AGE
+awx-cache-9b575fd6f-rttjj    1/1       Running             0          1d
+awx-db-bc87988c9-6sdwl       1/1       Running             0          20m
+awx-db-bc87988c9-x4h8n       0/1       ContainerCreating   0          1m
+awx-queue-657d5cdb49-98f26   1/1       Running             0          1d
+awx-task-6556b58666-f9ndb    1/1       Running             0          1d
+awx-web-7f99b46468-g4gjd     1/1       Running             0          1d
+my-nginx-9d5677d94-l6qbg     1/1       Running             0          21h
+my-nginx2-68d6774bb8-j4zfk   1/1       Running             0          20h
+my-nginx3-5467d8b774-tghpk   1/1       Running             0          20h
+(⎈ |zaction-dev:awx) kdb po awx-db-bc87988c9-x4h8n
+Name:           awx-db-bc87988c9-x4h8n
+Namespace:      awx
+Node:           10.178.188.52/10.178.188.52
+Start Time:     Tue, 26 Jun 2018 11:10:31 +0900
+Labels:         app=awx
+                pod-template-hash=674354475
+                release=awx
+                role=database
+Annotations:    kubernetes.io/psp=ibm-privileged-psp
+Status:         Pending
+IP:
+Controlled By:  ReplicaSet/awx-db-bc87988c9
+Containers:
+  db:
+    Container ID:
+    Image:          postgres:9.6.3
+    Image ID:
+    Port:           5432/TCP
+    Host Port:      0/TCP
+    State:          Waiting
+      Reason:       ContainerCreating
+    Ready:          False
+    Restart Count:  0
+    Environment:
+      POSTGRES_USER:      awx
+      POSTGRES_PASSWORD:  awxpass
+      POSTGRES_DB:        awx
+      PGDATA:             /var/lib/postgresql/data/pgdata
+    Mounts:
+      /var/lib/postgresql/data from data (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from default-token-dblxz (ro)
+Conditions:
+  Type           Status
+  Initialized    True
+  Ready          False
+  PodScheduled   True
+Volumes:
+  data:
+    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:  awx-db-sizeup80
+    ReadOnly:   false
+  default-token-dblxz:
+    Type:        Secret (a volume populated by a Secret)
+    SecretName:  default-token-dblxz
+    Optional:    false
+QoS Class:       BestEffort
+Node-Selectors:  <none>
+Tolerations:     node.kubernetes.io/not-ready:NoExecute for 300s
+                 node.kubernetes.io/unreachable:NoExecute for 300s
+Events:
+  Type    Reason                 Age   From                    Message
+  ----    ------                 ----  ----                    -------
+  Normal  Scheduled              1m    default-scheduler       Successfully assigned awx-db-bc87988c9-x4h8n to 10.178.188.52
+  Normal  SuccessfulMountVolume  1m    kubelet, 10.178.188.52  MountVolume.SetUp succeeded for volume "default-token-dblxz"
+(⎈ |zaction-dev:awx) kg po
+NAME                         READY     STATUS              RESTARTS   AGE
+awx-cache-9b575fd6f-rttjj    1/1       Running             0          1d
+awx-db-bc87988c9-6sdwl       1/1       Running             0          20m
+awx-db-bc87988c9-x4h8n       0/1       ContainerCreating   0          1m
+awx-queue-657d5cdb49-98f26   1/1       Running             0          1d
+awx-task-6556b58666-f9ndb    1/1       Running             0          1d
+awx-web-7f99b46468-g4gjd     1/1       Running             0          1d
+my-nginx-9d5677d94-l6qbg     1/1       Running             0          21h
+my-nginx2-68d6774bb8-j4zfk   1/1       Running             0          20h
+my-nginx3-5467d8b774-tghpk   1/1       Running             0          20h
+(⎈ |zaction-dev:awx) kdb po awx-db-bc87988c9-x4h8n
+Name:           awx-db-bc87988c9-x4h8n
+Namespace:      awx
+Node:           10.178.188.52/10.178.188.52
+Start Time:     Tue, 26 Jun 2018 11:10:31 +0900
+Labels:         app=awx
+                pod-template-hash=674354475
+                release=awx
+                role=database
+Annotations:    kubernetes.io/psp=ibm-privileged-psp
+Status:         Pending
+IP:
+Controlled By:  ReplicaSet/awx-db-bc87988c9
+Containers:
+  db:
+    Container ID:
+    Image:          postgres:9.6.3
+    Image ID:
+    Port:           5432/TCP
+    Host Port:      0/TCP
+    State:          Waiting
+      Reason:       ContainerCreating
+    Ready:          False
+    Restart Count:  0
+    Environment:
+      POSTGRES_USER:      awx
+      POSTGRES_PASSWORD:  awxpass
+      POSTGRES_DB:        awx
+      PGDATA:             /var/lib/postgresql/data/pgdata
+    Mounts:
+      /var/lib/postgresql/data from data (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from default-token-dblxz (ro)
+Conditions:
+  Type           Status
+  Initialized    True
+  Ready          False
+  PodScheduled   True
+Volumes:
+  data:
+    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:  awx-db-sizeup80
+    ReadOnly:   false
+  default-token-dblxz:
+    Type:        Secret (a volume populated by a Secret)
+    SecretName:  default-token-dblxz
+    Optional:    false
+QoS Class:       BestEffort
+Node-Selectors:  <none>
+Tolerations:     node.kubernetes.io/not-ready:NoExecute for 300s
+                 node.kubernetes.io/unreachable:NoExecute for 300s
+Events:
+  Type     Reason                 Age   From                    Message
+  ----     ------                 ----  ----                    -------
+  Normal   Scheduled              2m    default-scheduler       Successfully assigned awx-db-bc87988c9-x4h8n to 10.178.188.52
+  Normal   SuccessfulMountVolume  2m    kubelet, 10.178.188.52  MountVolume.SetUp succeeded for volume "default-token-dblxz"
+  Warning  FailedMount            2s    kubelet, 10.178.188.52  Unable to mount volumes for pod "awx-db-bc87988c9-x4h8n_awx(1a7528e6-78e6-11e8-aae1-c64f1770d155)": timeout expired waiting for volumes to attach/mount for pod "awx"/"awx-db-bc87988c9-x4h8n". list of unattached/unmounted volumes=[data]
+(⎈ |zaction-dev:awx) kdb po awx-db-bc87988c9-x4h8n
+Name:           awx-db-bc87988c9-x4h8n
+Namespace:      awx
+Node:           10.178.188.52/10.178.188.52
+Start Time:     Tue, 26 Jun 2018 11:10:31 +0900
+Labels:         app=awx
+                pod-template-hash=674354475
+                release=awx
+                role=database
+Annotations:    kubernetes.io/psp=ibm-privileged-psp
+Status:         Pending
+IP:
+Controlled By:  ReplicaSet/awx-db-bc87988c9
+Containers:
+  db:
+    Container ID:
+    Image:          postgres:9.6.3
+    Image ID:
+    Port:           5432/TCP
+    Host Port:      0/TCP
+    State:          Waiting
+      Reason:       ContainerCreating
+    Ready:          False
+    Restart Count:  0
+    Environment:
+      POSTGRES_USER:      awx
+      POSTGRES_PASSWORD:  awxpass
+      POSTGRES_DB:        awx
+      PGDATA:             /var/lib/postgresql/data/pgdata
+    Mounts:
+      /var/lib/postgresql/data from data (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from default-token-dblxz (ro)
+Conditions:
+  Type           Status
+  Initialized    True
+  Ready          False
+  PodScheduled   True
+Volumes:
+  data:
+    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:  awx-db-sizeup80
+    ReadOnly:   false
+  default-token-dblxz:
+    Type:        Secret (a volume populated by a Secret)
+    SecretName:  default-token-dblxz
+    Optional:    false
+QoS Class:       BestEffort
+Node-Selectors:  <none>
+Tolerations:     node.kubernetes.io/not-ready:NoExecute for 300s
+                 node.kubernetes.io/unreachable:NoExecute for 300s
+Events:
+  Type     Reason                 Age   From                    Message
+  ----     ------                 ----  ----                    -------
+  Normal   Scheduled              2m    default-scheduler       Successfully assigned awx-db-bc87988c9-x4h8n to 10.178.188.52
+  Normal   SuccessfulMountVolume  2m    kubelet, 10.178.188.52  MountVolume.SetUp succeeded for volume "default-token-dblxz"
+  Warning  FailedMount            6s    kubelet, 10.178.188.52  Unable to mount volumes for pod "awx-db-bc87988c9-x4h8n_awx(1a7528e6-78e6-11e8-aae1-c64f1770d155)": timeout expired waiting for volumes to attach/mount for pod "awx"/"awx-db-bc87988c9-x4h8n". list of unattached/unmounted volumes=[data]
+(⎈ |zaction-dev:awx) kdb po awx-db-bc87988c9-x4h8n
+Name:           awx-db-bc87988c9-x4h8n
+Namespace:      awx
+Node:           10.178.188.52/10.178.188.52
+Start Time:     Tue, 26 Jun 2018 11:10:31 +0900
+Labels:         app=awx
+                pod-template-hash=674354475
+                release=awx
+                role=database
+Annotations:    kubernetes.io/psp=ibm-privileged-psp
+Status:         Pending
+IP:
+Controlled By:  ReplicaSet/awx-db-bc87988c9
+Containers:
+  db:
+    Container ID:
+    Image:          postgres:9.6.3
+    Image ID:
+    Port:           5432/TCP
+    Host Port:      0/TCP
+    State:          Waiting
+      Reason:       ContainerCreating
+    Ready:          False
+    Restart Count:  0
+    Environment:
+      POSTGRES_USER:      awx
+      POSTGRES_PASSWORD:  awxpass
+      POSTGRES_DB:        awx
+      PGDATA:             /var/lib/postgresql/data/pgdata
+    Mounts:
+      /var/lib/postgresql/data from data (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from default-token-dblxz (ro)
+Conditions:
+  Type           Status
+  Initialized    True
+  Ready          False
+  PodScheduled   True
+Volumes:
+  data:
+    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:  awx-db-sizeup80
+    ReadOnly:   false
+  default-token-dblxz:
+    Type:        Secret (a volume populated by a Secret)
+    SecretName:  default-token-dblxz
+    Optional:    false
+QoS Class:       BestEffort
+Node-Selectors:  <none>
+Tolerations:     node.kubernetes.io/not-ready:NoExecute for 300s
+                 node.kubernetes.io/unreachable:NoExecute for 300s
+Events:
+  Type     Reason                 Age   From                    Message
+  ----     ------                 ----  ----                    -------
+  Normal   Scheduled              2m    default-scheduler       Successfully assigned awx-db-bc87988c9-x4h8n to 10.178.188.52
+  Normal   SuccessfulMountVolume  2m    kubelet, 10.178.188.52  MountVolume.SetUp succeeded for volume "default-token-dblxz"
+apiVersion: apps/v1
+  Warning  FailedMount            9s    kubelet, 10.178.188.52  Unable to mount volumes for pod "awx-db-bc87988c9-x4h8n_awx(1a7528e6-78e6-11e8-aae1-c64f1770d155)": timeout expired waiting for volumes to attach/mount for pod "awx"/"awx-db-bc87988c9-x4h8n". list of unattached/unmounapiVersion: v1
+ted volumes=[data]
+(⎈ |zaction-dev:awx) kdb po awx-db-bc87988c9-x4h8n
+Name:           awx-db-bc87988c9-x4h8n
+Namespace:      awx
+Node:           10.178.188.52/10.178.188.52
+Start Time:     Tue, 26 Jun 2018 11:10:31 +0900
+Labels:         app=awx
+                pod-template-hash=674354475
+                release=awx
+                role=database
+Annotations:    kubernetes.io/psp=ibm-privileged-psp
+Status:         Pending
+IP:
+Controlled By:  ReplicaSet/awx-db-bc87988c9
+Containers:
+  db:
+    Container ID:
+    Image:          postgres:9.6.3
+    Image ID:
+    Port:           5432/TCP
+    Host Port:      0/TCP
+    State:          Waiting
+      Reason:       ContainerCreating
+    Ready:          False
+    Restart Count:  0
+    Environment:
+      POSTGRES_USER:      awx
+      POSTGRES_PASSWORD:  awxpass
+      POSTGRES_DB:        awx
+      PGDATA:             /var/lib/postgresql/data/pgdata
+    Mounts:
+      /var/lib/postgresql/data from data (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from default-token-dblxz (ro)
+Conditions:
+  Type           Status
+  Initialized    True
+  Ready          False
+  PodScheduled   True
+Volumes:
+  data:
+    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:  awx-db-sizeup80
+    ReadOnly:   false
+  default-token-dblxz:
+    Type:        Secret (a volume populated by a Secret)
+    SecretName:  default-token-dblxz
+    Optional:    false
+QoS Class:       BestEffort
+Node-Selectors:  <none>
+Tolerations:     node.kubernetes.io/not-ready:NoExecute for 300s
+                 node.kubernetes.io/unreachable:NoExecute for 300s
+Events:
+  Type     Reason                 Age   From                    Message
+  ----     ------                 ----  ----                    -------
+  Normal   Scheduled              2m    default-scheduler       Successfully assigned awx-db-bc87988c9-x4h8n to 10.178.188.52
+  Normal   SuccessfulMountVolume  2m    kubelet, 10.178.188.52  MountVolume.SetUp succeeded for volume "default-token-dblxz"
+  Warning  FailedMount            10s   kubelet, 10.178.188.52  Unable to mount volumes for pod "awx-db-bc87988c9-x4h8n_awx(1a7528e6-78e6-11e8-aae1-c64f1770d155)": timeout expired waiting for volumes to attach/mount for pod "awx"/"awx-db-bc87988c9-x4h8n". list of unattached/unmounted volumes=[data]
+  Warning  FailedMount            0s    ibm/ibmc-block          Error while attaching the device pv awx-db-sizeup80 cannot be attached to the node 10.178.188.52. Error: PV awx-db-sizeup80 is already attached to another node 10.178.188.21
+(⎈ |zaction-dev:awx) ls
+set-db.yaml  set-pv.yaml  set-pvc.yaml
+(⎈ |zaction-dev:awx) cd ..
+(⎈ |zaction-dev:awx) ls
+ansible     charts      test-180614 test-180615 test-180619 test-180625 test-180626
+(⎈ |zaction-dev:awx) cd test-180625
+(⎈ |zaction-dev:awx) ls
+ansible       charts        my-nginx.yaml pvc           service.yaml  test2         test3
+(⎈ |zaction-dev:awx) cp -r test3 test4
+(⎈ |zaction-dev:awx) ls
+ansible       charts        my-nginx.yaml pvc           service.yaml  test2         test3         test4
+(⎈ |zaction-dev:awx) cd test4
+(⎈ |zaction-dev:awx) ls
+my-nginx.yaml service.yaml
+(⎈ |zaction-dev:awx) vi my-nginx.yaml
+(⎈ |zaction-dev:awx) vi my-nginx.yaml
+(⎈ |zaction-dev:awx) vi service.yaml
+(⎈ |zaction-dev:awx) kg deploy
+NAME        DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+awx-cache   1         1         1            1           1d
+awx-db      2         2         2            1           24m
+awx-queue   1         1         1            1           1d
+awx-task    1         1         1            1           1d
+awx-web     1         1         1            1           1d
+my-nginx    1         1         1            1           21h
+my-nginx2   1         1         1            1           20h
+my-nginx3   1         1         1            1           20h
+(⎈ |zaction-dev:awx) kd deploy awx-db
+deployment.extensions "awx-db" deleted
+(⎈ |zaction-dev:awx) kg deploy
+NAME        DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+awx-cache   1         1         1            1           1d
+awx-queue   1         1         1            1           1d
+awx-task    1         1         1            1           1d
+awx-web     1         1         1            1           1d
+my-nginx    1         1         1            1           21h
+my-nginx2   1         1         1            1           20h
+my-nginx3   1         1         1            1           20h
+(⎈ |zaction-dev:awx) kg pv
+NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS    CLAIM                                          STORAGECLASS               REASON    AGE
+awx-db-sizeup                              50Gi       RWO            Delete           Bound     awx/awx-db-sizeup                              ibmc-block-bronze                    15h
+awx-db-sizeup80                            80Gi       RWO            Delete           Bound     awx/awx-db-sizeup80                            ibmc-block-bronze                    1h
+pvc-0a9b44e6-5ca2-11e8-ada0-22b8bd203138   20Gi       RWX            Delete           Bound     serverless-console/pgdata-pgbackend-0          ibmc-file-bronze                     35d
+pvc-21c30123-5fe6-11e8-ada0-22b8bd203138   20Gi       RWO            Delete           Bound     fission-merge/fission-storage-pvc              ibmc-file-bronze                     31d
+pvc-2b26cd8f-5ca2-11e8-ada0-22b8bd203138   20Gi       RWX            Delete           Bound     auth/pgdata-pgauth-0                           ibmc-file-bronze                     35d
+pvc-2e0caacd-5c9f-11e8-ada0-22b8bd203138   20Gi       RWX            Delete           Bound     fission/fission-storage-pvc                    ibmc-file-bronze                     35d
+pvc-94c92ae7-6a0c-11e8-ada0-22b8bd203138   20Gi       RWO            Delete           Bound     serverless-logging/storage-es-data-0                                                18d
+pvc-ab710937-7378-11e8-ada0-22b8bd203138   20Gi       RWO            Retain           Bound     serverless-console/pgdata-pgauth-0             ibmc-block-retain-bronze             6d
+pvc-bed78cc5-72d8-11e8-ada0-22b8bd203138   20Gi       RWO            Retain           Bound     dispatch/postgresql-storage-pvc                                                     7d
+pvc-e090d775-6ad2-11e8-ada0-22b8bd203138   20Gi       RWO            Delete           Bound     dispatch-fission-test/postgresql-storage-pvc                                        17d
+pvc-fe4bf2bd-6a0c-11e8-ada0-22b8bd203138   20Gi       RWO            Delete           Bound     serverless-logging/storage-es-data-1                                                18d
+(⎈ |zaction-dev:awx) kg pvc
+NAME              STATUS    VOLUME            CAPACITY   ACCESS MODES   STORAGECLASS        AGE
+awx-db-sizeup     Bound     awx-db-sizeup     50Gi       RWO            ibmc-block-bronze   14h
+awx-db-sizeup80   Bound     awx-db-sizeup80   80Gi       RWO            ibmc-block-bronze   1h
+(⎈ |zaction-dev:awx) ls
+my-nginx.yaml service.yaml
+(⎈ |zaction-dev:awx) kcf .
+deployment.apps "vol-test" created
+service "vol-test" created
+(⎈ |zaction-dev:awx) kg deploy
+NAME        DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+awx-cache   1         1         1            1           1d
+awx-queue   1         1         1            1           1d
+awx-task    1         1         1            1           1d
+awx-web     1         1         1            1           1d
+my-nginx    1         1         1            1           21h
+my-nginx2   1         1         1            1           20h
+my-nginx3   1         1         1            1           20h
+vol-test    1         1         1            0           9s
+(⎈ |zaction-dev:awx) kg po
+NAME                         READY     STATUS              RESTARTS   AGE
+awx-cache-9b575fd6f-rttjj    1/1       Running             0          1d
+awx-queue-657d5cdb49-98f26   1/1       Running             0          1d
+awx-task-6556b58666-f9ndb    1/1       Running             0          1d
+awx-web-7f99b46468-g4gjd     1/1       Running             0          1d
+my-nginx-9d5677d94-l6qbg     1/1       Running             0          21h
+my-nginx2-68d6774bb8-j4zfk   1/1       Running             0          20h
+my-nginx3-5467d8b774-tghpk   1/1       Running             0          20h
+vol-test-84b9c447d5-v62j9    0/1       ContainerCreating   0          10s
+(⎈ |zaction-dev:awx) kg po -w
+NAME                         READY     STATUS              RESTARTS   AGE
+awx-cache-9b575fd6f-rttjj    1/1       Running             0          1d
+awx-queue-657d5cdb49-98f26   1/1       Running             0          1d
+awx-task-6556b58666-f9ndb    1/1       Running             0          1d
+awx-web-7f99b46468-g4gjd     1/1       Running             0          1d
+my-nginx-9d5677d94-l6qbg     1/1       Running             0          21h
+my-nginx2-68d6774bb8-j4zfk   1/1       Running             0          20h
+my-nginx3-5467d8b774-tghpk   1/1       Running             0          20h
+vol-test-84b9c447d5-v62j9    0/1       ContainerCreating   0          14s
+vol-test-84b9c447d5-v62j9   1/1       Running   0         32s
+^C%                                                                                                                                                                                                                                                                                      
+(⎈ |zaction-dev:awx) ke vol-test-84b9c447d5-v62j9 bash
+root@vol-test-84b9c447d5-v62j9:/# df -h
+Filesystem                                     Size  Used Avail Use% Mounted on
+overlay                                         99G   12G   82G  13% /
+tmpfs                                          7.9G     0  7.9G   0% /dev
+tmpfs                                          7.9G     0  7.9G   0% /sys/fs/cgroup
+/dev/mapper/docker_data                         99G   12G   82G  13% /etc/hosts
+shm                                             64M     0   64M   0% /dev/shm
+/dev/mapper/3600a09803830446d463f4c4548564f4d   20G   20G     0 100% /var/lib/postgresql/data
+tmpfs                                          7.9G   12K  7.9G   1% /run/secrets/kubernetes.io/serviceaccount
+tmpfs                                          7.9G     0  7.9G   0% /sys/firmware
+root@vol-test-84b9c447d5-v62j9:/# lsof +L1 /dev/mapper/3600a09803830446d463f4c4548564f4d
+bash: lsof: command not found
+root@vol-test-84b9c447d5-v62j9:/#
