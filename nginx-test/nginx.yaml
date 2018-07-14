@@ -1,0 +1,9 @@
+---
+- name: Install nginx playbook
+  hosts: all
+  gather_facts: false
+  remote_user: pure-linux
+  become: yes
+  become_user: root
+  roles:
+    - role: nginx
